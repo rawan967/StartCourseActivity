@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    /* الألوان الأساسية من الباليت */
+    --bg: #F7F5F0;             /* 01 - Primary */
+    --text: #171717;           /* 02 - Secondary */
+    --primary: #700608;        /* 03 - Accent */
+    --primary-light: #A83A3D;  /* 04 - Accent Light */
+    --bg-secondary: #D8CFC4;   /* 05 - Support */
+    
+    /* عناصر التصميم الأساسية */
+    --panel: #FFFFFF;          
+    --card-bg: #FFFFFF;      
+    
+    /* ألوان مستنتجة من الـ Secondary بالشفافية لتجنب إضافة ألوان خارجية */
+    --text-muted: rgba(23, 23, 23, 0.6);   
+    --border: rgba(23, 23, 23, 0.15);
+    
+    /* ألوان إشعارات النظام */
+    --success: #22c55e;
+    --danger: #ef4444;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
+
+body { 
+    min-height: 100vh; 
+    font-family: "Inter", sans-serif; 
+    color: var(--text); 
+    background: var(--bg); 
+    padding: 30px; 
+}
+
+.btn { 
+    padding: 14px 25px; 
+    border: none; 
+    border-radius: 12px; 
+    font-weight: 700; 
+    cursor: pointer; 
+    transition: transform 0.2s; 
+}
+
+.btn:hover { 
+    transform: translateY(-2px); 
+}
+
+.btn-secondary { 
+    background: var(--bg-secondary); 
+    color: var(--text); 
+    border: 1px solid var(--border); 
+}
+
+.btn-primary { 
+    background: linear-gradient(to right, var(--primary), var(--primary-light)); 
+    color: #fff; 
+}
+
+.result-message { 
+    min-height: 25px; 
+    margin-top: 15px; 
+    text-align: center; 
+    font-weight: 700; 
+    font-size: 18px; 
+}
+
+.result-message.success { color: var(--success); }
+.result-message.error { color: var(--danger); }
