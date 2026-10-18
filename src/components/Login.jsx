@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_URL, EVENT_ID } from '../config';
 
 const Login = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
@@ -10,11 +11,11 @@ const Login = ({ onLoginSuccess }) => {
     setIsLoading(true);
     setError('');
 
-    const event_id = '7-14'; 
+    const event_id = EVENT_ID;
 
     try {
      
-      const apiUrl = 'http://localhost:5550';
+      const apiUrl = API_URL;
       const response = await fetch(`${apiUrl}/api/events/startcourse/${event_id}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -24,7 +25,7 @@ const Login = ({ onLoginSuccess }) => {
       const data = await response.json();
 
       if (data.status === true) {
-        onLoginSuccess(data.data.person_id);
+        onLoginSuccess(data.data.person_id, data.data.progress || 0);
       } else {
         setError(data.message || 'Email not found. Please register first.');
       }

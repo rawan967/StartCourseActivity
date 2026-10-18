@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { API_URL, TIME_LIMIT, BASE_POINTS, MAX_BONUS } from '../config';
 
-const GameScreen = ({ level, personId, eventId, onLevelComplete }) => {
+const GameScreen = ({ level, levelNumber, personId, eventId, onLevelComplete }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState('');
 
@@ -10,10 +11,44 @@ const GameScreen = ({ level, personId, eventId, onLevelComplete }) => {
   const [multiBlanks, setMultiBlanks] = useState({});     
   const [draggedCard, setDraggedCard] = useState(null);
 
+  // التايمر: كل سؤال ليه وقت، وكل ما اللاعب يجاوب أسرع بياخد بونص أكبر
+  const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
+  const [locked, setLocked] = useState(false);
+
+  const currentPoints = BASE_POINTS + Math.round(MAX_BONUS * timeLeft / TIME_LIMIT);
+
   useEffect(() => {
     resetPuzzle();
     setFeedback('');
+    setTimeLeft(TIME_LIMIT);
+    setLocked(false);
   }, [level]);
+
+  // بيبعت النقاط + رقم المرحلة للـ backend (الـ backend بيحفظ آخر مرحلة وصلها)
+  const saveProgress = async (points) => {
+    const response = await fetch(
+      `${API_URL}/api/events/startcourse/${eventId}/updatescore/${points}/${personId}?level=${levelNumber}`,
+      { method: 'PATCH' }
+    );
+    return response.json();
+  };
+
+  const handleTimeUp = async () => {
+    setLocked(true);
+    setFeedback("Time's up! 0 points for this level.");
+    try { await saveProgress(0); } catch { /* نكمّل حتى لو الحفظ فشل */ }
+    setTimeout(() => { onLevelComplete(); }, 1500);
+  };
+
+  useEffect(() => {
+    if (locked) return;
+    if (timeLeft <= 0) {
+      handleTimeUp();
+      return;
+    }
+    const t = setTimeout(() => setTimeLeft((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [timeLeft, locked]);
 
 
   const resetPuzzle = () => {
@@ -89,28 +124,25 @@ const GameScreen = ({ level, personId, eventId, onLevelComplete }) => {
       return;
     }
 
+    setLocked(true); // وقف التايمر
     setIsSubmitting(true);
-    setFeedback('Correct! Saving score...');
-    
-    const scoreEarned = 10; 
-    const apiUrl = 'http://localhost:5550';
+
+    const scoreEarned = currentPoints;
+    setFeedback(`Correct! +${scoreEarned} points. Saving...`);
 
     try {
- 
-      const response = await fetch(`${apiUrl}/api/events/startcourse/${eventId}/updatescore/${scoreEarned}/${personId}`, {
-        method: 'PATCH',
-      });
-      
-      const data = await response.json();
+      const data = await saveProgress(scoreEarned);
 
       if (data.status === true) {
         setFeedback('Score saved! Loading next level...');
         setTimeout(() => { onLevelComplete(); }, 1500);
       } else {
         setFeedback('Error saving score.');
+        setLocked(false);
       }
     } catch (err) {
       setFeedback('Connection error.');
+      setLocked(false);
     } finally {
       setIsSubmitting(false);
     }
@@ -147,6 +179,12 @@ const GameScreen = ({ level, personId, eventId, onLevelComplete }) => {
            <h3 style={{ margin: 0, color: 'var(--primary)' }}>Level {level?.id}</h3>
            <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>{level?.menuTitle}</span>
         </div>
+        <div style={{ textAlign: 'right' }}>
+           <div style={{ fontSize: '28px', fontWeight: 'bold', color: timeLeft <= 10 ? 'var(--danger)' : 'var(--text)' }}>
+             ⏱ {timeLeft}s
+           </div>
+           <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Worth now: {currentPoints} pts</span>
+        </div>
       </div>
 
       <div style={{ padding: '20px', backgroundColor: 'var(--panel)', borderRadius: '12px', border: '1px solid var(--border)' }}>
@@ -182,8 +220,8 @@ const GameScreen = ({ level, personId, eventId, onLevelComplete }) => {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', margin: '25px 0' }}>
-        <button className="btn btn-secondary" onClick={resetPuzzle} disabled={isSubmitting}>↻ RESET</button>
-        <button className="btn btn-primary" onClick={handleCorrectAnswer} disabled={isSubmitting}>
+        <button className="btn btn-secondary" onClick={resetPuzzle} disabled={isSubmitting || locked}>↻ RESET</button>
+        <button className="btn btn-primary" onClick={handleCorrectAnswer} disabled={isSubmitting || locked}>
           {isSubmitting ? 'SAVING...' : 'RUN CODE ▶'}
         </button>
       </div>

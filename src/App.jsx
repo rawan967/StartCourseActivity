@@ -3,6 +3,7 @@ import Login from './components/Login';
 import GameScreen from './components/GameScreen';
 import levels from './data/levels';
 import courseImage from './assets/image.png';
+import { API_URL, EVENT_ID } from './config';
 import './App.css';
 
 function App() {
@@ -10,9 +11,16 @@ function App() {
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
   const [finalScore, setFinalScore] = useState(null); 
+  const [leaderboard, setLeaderboard] = useState(null);
 
-  const handleLoginSuccess = (id) => {
+  const handleLoginSuccess = (id, progress = 0) => {
     setPersonId(id);
+    // progress = عدد المراحل اللي خلّصها قبل كده. نكمّل من اللي بعدها
+    if (progress >= levels.length) {
+      setIsFinished(true);
+    } else {
+      setCurrentLevelIndex(progress);
+    }
   };
 
   const handleLevelComplete = () => {
@@ -24,15 +32,21 @@ function App() {
      }
   };
 
+ const fetchLeaderboard = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/events/startcourse/${EVENT_ID}/leaderboard`);
+      const data = await response.json();
+      if (data.status === true) setLeaderboard(data.message);
+    } catch (error) {
+      console.error("Error fetching leaderboard:", error);
+    }
+  };
+
  useEffect(() => {
     if (isFinished && personId) {
       const fetchFinalScore = async () => {
-        const apiUrl = 'http://localhost:5550';
-        const eventId = '7-14'; 
-        
         try {
-          
-          const response = await fetch(`${apiUrl}/api/events/startcourse/${eventId}/${personId}`);
+          const response = await fetch(`${API_URL}/api/events/startcourse/${EVENT_ID}/${personId}`);
           const data = await response.json();
           if (data.status === true) {
             setFinalScore(data.message.data3); 
@@ -42,6 +56,7 @@ function App() {
         }
       };
       fetchFinalScore();
+      fetchLeaderboard();
     }
   }, [isFinished, personId]);
 
@@ -56,6 +71,33 @@ function App() {
             <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '10px' }}>
               ⭐ Total Score: {finalScore !== null ? finalScore : "Loading..."} 
             </div>
+         </div>
+
+         <div style={{ background: 'var(--card-bg)', padding: '24px', borderRadius: '15px', boxShadow: 'var(--shadow)', width: 'min(520px, 100%)', marginTop: '24px', textAlign: 'left' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <h2 style={{ color: 'var(--primary)', margin: 0 }}>🏆 Leaderboard</h2>
+              <button className="btn btn-secondary" style={{ padding: '8px 14px' }} onClick={fetchLeaderboard}>↻ Refresh</button>
+            </div>
+            {leaderboard === null ? (
+              <p style={{ color: 'var(--text-muted)' }}>Loading...</p>
+            ) : (
+              <>
+                {leaderboard.slice(0, 10).map((row, i) => (
+                  <div key={row.person_id} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', borderRadius: '8px', marginBottom: '6px', background: row.person_id === personId ? 'var(--bg-secondary)' : 'transparent', fontWeight: row.person_id === personId ? 700 : 400 }}>
+                    <span>{i + 1}. {row.name}</span>
+                    <span>{row.score} pts</span>
+                  </div>
+                ))}
+                {(() => {
+                  const myIndex = leaderboard.findIndex((r) => r.person_id === personId);
+                  return myIndex >= 10 ? (
+                    <p style={{ marginTop: '10px', color: 'var(--text-muted)' }}>
+                      Your rank: {myIndex + 1} of {leaderboard.length}
+                    </p>
+                  ) : null;
+                })()}
+              </>
+            )}
          </div>
        </div>
      );
@@ -73,7 +115,8 @@ function App() {
         <GameScreen 
            level={levels[currentLevelIndex]} 
            personId={personId}
-           eventId="7-14"
+           levelNumber={currentLevelIndex + 1}
+           eventId={EVENT_ID}
            onLevelComplete={handleLevelComplete} 
         />
       )}
