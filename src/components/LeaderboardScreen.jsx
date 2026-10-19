@@ -1,89 +1,74 @@
-import { useState, useEffect } from 'react';
-import { API_URL, EVENT_ID } from '../config';
-import levels from '../data/levels';
+import React, { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 
-const REFRESH_MS = 5000; // التحديث كل 5 ثواني
-const SHOW_TOP = 10;     // عدد اللي يظهروا على الشاشة
-const medals = ['🥇', '🥈', '🥉'];
-
-// صفحة المنظمين: افتحيها بـ  /?view=leaderboard  على الشاشة الكبيرة
-const LeaderboardScreen = () => {
+const Results = ({ eventId, personId, sessionScore, totalScore, onPlayAgain }) => {
   const [rows, setRows] = useState([]);
-  const [updatedAt, setUpdatedAt] = useState(null);
-  const [failed, setFailed] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    let active = true;
     const load = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/events/startcourse/${EVENT_ID}/leaderboard`);
+        const res = await fetch(`${API_URL}/api/events/startcourse/${eventId}/leaderboard`);
         const data = await res.json();
-        if (active && data.status === true) {
-          setRows(data.message);
-          setUpdatedAt(new Date());
-          setFailed(false);
-        }
+        if (data.status) setRows(data.message);
+        else setError('Could not load leaderboard.');
       } catch {
-        if (active) setFailed(true);
+        setError('Could not load leaderboard.');
+      } finally {
+        setLoading(false);
       }
     };
     load();
-    const timer = setInterval(load, REFRESH_MS);
-    return () => { active = false; clearInterval(timer); };
-  }, []);
+  }, [eventId]);
 
-  const finished = rows.filter((r) => r.progress >= levels.length).length;
+  const myIndex = rows.findIndex((r) => String(r.person_id) === String(personId));
+  const top = rows.slice(0, 10);
 
   return (
-    <div style={{ width: 'min(1100px, 100%)', margin: 'auto', textAlign: 'center' }}>
-      <h1 style={{ color: 'var(--primary)', fontSize: 'clamp(36px, 6vw, 72px)', fontWeight: 800, letterSpacing: '2px' }}>
-        🏆 LIVE LEADERBOARD
-      </h1>
-      <p style={{ color: 'var(--text-muted)', fontSize: '22px', margin: '8px 0 28px' }}>
-        {rows.length} players · {finished} finished
-      </p>
-
-      {rows.length === 0 && (
-        <p style={{ fontSize: '28px', color: 'var(--text-muted)', marginTop: '60px' }}>
-          Waiting for players...
+    <section style={{ textAlign: 'center' }}>
+      <div style={{ padding: '25px', backgroundColor: 'var(--card-bg)', borderRadius: '16px', boxShadow: 'var(--shadow)', marginBottom: '20px' }}>
+        <h2 style={{ color: 'var(--primary)', marginTop: 0 }}>Session complete 🎉</h2>
+        <div style={{ fontSize: '32px', fontWeight: 'bold' }}>+{sessionScore} pts</div>
+        <p style={{ color: 'var(--text-muted)', margin: '8px 0 0' }}>
+          Total score: <b>{totalScore}</b>
+          {myIndex >= 0 && <> · Your rank: <b>#{myIndex + 1}</b></>}
         </p>
+      </div>
+
+      <div style={{ padding: '20px', backgroundColor: 'var(--panel)', borderRadius: '12px', border: '1px solid var(--border)', textAlign: 'left' }}>
+        <h3 style={{ color: 'var(--primary)', marginTop: 0 }}>Leaderboard</h3>
+        {loading && <p style={{ color: 'var(--text-muted)' }}>Loading...</p>}
+        {error && <p style={{ color: 'var(--danger)' }}>{error}</p>}
+
+        {top.map((r, i) => {
+          const isMe = String(r.person_id) === String(personId);
+          return (
+            <div key={r.person_id} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', borderRadius: '8px', marginBottom: '6px', backgroundColor: isMe ? 'rgba(59,130,246,0.15)' : 'var(--card-bg)', fontWeight: isMe ? 'bold' : 'normal' }}>
+              <span>#{i + 1} {r.name}</span>
+              <span>{r.score} pts</span>
+            </div>
+          );
+        })}
+
+        {myIndex >= 10 && (
+          <>
+            <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>⋮</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', borderRadius: '8px', backgroundColor: 'rgba(59,130,246,0.15)', fontWeight: 'bold' }}>
+              <span>#{myIndex + 1} {rows[myIndex].name}</span>
+              <span>{rows[myIndex].score} pts</span>
+            </div>
+          </>
+        )}
+      </div>
+
+      {onPlayAgain && (
+        <button className="btn btn-primary" style={{ marginTop: '20px' }} onClick={onPlayAgain}>
+          PLAY AGAIN ↻
+        </button>
       )}
-
-      {rows.slice(0, SHOW_TOP).map((row, i) => (
-        <div
-          key={row.person_id}
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '80px 1fr 200px 140px',
-            alignItems: 'center',
-            gap: '16px',
-            padding: '16px 24px',
-            marginBottom: '12px',
-            borderRadius: '16px',
-            background: i === 0 ? 'var(--primary)' : 'var(--card-bg)',
-            color: i === 0 ? '#fff' : 'var(--text)',
-            boxShadow: 'var(--shadow)',
-            fontSize: 'clamp(20px, 3vw, 34px)',
-            fontWeight: 700,
-            textAlign: 'left',
-          }}
-        >
-          <span style={{ textAlign: 'center' }}>{medals[i] || i + 1}</span>
-          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.name}</span>
-          <span style={{ fontSize: '0.6em', fontWeight: 500, opacity: 0.8 }}>
-            Level {Math.min(row.progress, levels.length)}/{levels.length}
-          </span>
-          <span style={{ textAlign: 'right' }}>{row.score} pts</span>
-        </div>
-      ))}
-
-      <p style={{ color: 'var(--text-muted)', marginTop: '24px', fontSize: '16px' }}>
-        {failed
-          ? '⚠️ Connection problem, retrying...'
-          : updatedAt && `Updated ${updatedAt.toLocaleTimeString()}`}
-      </p>
-    </div>
+    </section>
   );
 };
 
-export default LeaderboardScreen;
+export default Results;

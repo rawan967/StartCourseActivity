@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { API_URL, EVENT_ID } from '../config';
 
+// onLoginSuccess(personId, currentScore)
 const Login = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
@@ -11,12 +12,8 @@ const Login = ({ onLoginSuccess }) => {
     setIsLoading(true);
     setError('');
 
-    const event_id = EVENT_ID;
-
     try {
-     
-      const apiUrl = API_URL;
-      const response = await fetch(`${apiUrl}/api/events/startcourse/${event_id}/login`, {
+      const response = await fetch(`${API_URL}/api/events/startcourse/${EVENT_ID}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email }),
@@ -25,7 +22,7 @@ const Login = ({ onLoginSuccess }) => {
       const data = await response.json();
 
       if (data.status === true) {
-        onLoginSuccess(data.data.person_id, data.data.progress || 0);
+        onLoginSuccess(data.data.person_id, data.data.currentScore || 0);
       } else {
         setError(data.message || 'Email not found. Please register first.');
       }
@@ -41,7 +38,7 @@ const Login = ({ onLoginSuccess }) => {
       <div style={{ background: 'var(--card-bg)', padding: '40px', borderRadius: '20px', boxShadow: 'var(--shadow)', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
         <h2 style={{ color: 'var(--primary)', marginBottom: '20px' }}>Welcome to Start Course 26</h2>
         <p style={{ color: 'var(--text-muted)', marginBottom: '20px' }}>Enter your registered email to start.</p>
-        
+
         <form onSubmit={handleSubmit}>
           <input type="email" placeholder="Email..." value={email} onChange={(e) => setEmail(e.target.value)} required
             style={{ width: '100%', padding: '12px', marginBottom: '20px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '16px' }}

@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL, TIME_LIMIT, BASE_POINTS, MAX_BONUS } from '../config';
 
+
 const GameScreen = ({ level, levelNumber, personId, eventId, onLevelComplete }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState('');
 
-
   const [availableCards, setAvailableCards] = useState([]);
-  const [solutionCards, setSolutionCards] = useState([]); 
-  const [multiBlanks, setMultiBlanks] = useState({});     
+  const [solutionCards, setSolutionCards] = useState([]);
+  const [multiBlanks, setMultiBlanks] = useState({});
   const [draggedCard, setDraggedCard] = useState(null);
 
-  // التايمر: كل سؤال ليه وقت، وكل ما اللاعب يجاوب أسرع بياخد بونص أكبر
   const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
   const [locked, setLocked] = useState(false);
 
@@ -24,7 +23,7 @@ const GameScreen = ({ level, levelNumber, personId, eventId, onLevelComplete }) 
     setLocked(false);
   }, [level]);
 
-  // بيبعت النقاط + رقم المرحلة للـ backend (الـ backend بيحفظ آخر مرحلة وصلها)
+
   const saveProgress = async (points) => {
     const response = await fetch(
       `${API_URL}/api/events/startcourse/${eventId}/updatescore/${points}/${personId}?level=${levelNumber}`,
@@ -36,8 +35,12 @@ const GameScreen = ({ level, levelNumber, personId, eventId, onLevelComplete }) 
   const handleTimeUp = async () => {
     setLocked(true);
     setFeedback("Time's up! 0 points for this level.");
-    try { await saveProgress(0); } catch { /* نكمّل حتى لو الحفظ فشل */ }
-    setTimeout(() => { onLevelComplete(); }, 1500);
+    let total;
+    try {
+      const data = await saveProgress(0);
+      total = data.totalScore;
+    } catch { /* نكمّل حتى لو الحفظ فشل */ }
+    setTimeout(() => { onLevelComplete(total); }, 1500);
   };
 
   useEffect(() => {
@@ -50,7 +53,6 @@ const GameScreen = ({ level, levelNumber, personId, eventId, onLevelComplete }) 
     return () => clearTimeout(t);
   }, [timeLeft, locked]);
 
-
   const resetPuzzle = () => {
     if (level) {
       const shuffled = [...level.cards].sort(() => Math.random() - 0.5);
@@ -62,7 +64,7 @@ const GameScreen = ({ level, levelNumber, personId, eventId, onLevelComplete }) 
   };
 
   const handleDragStart = (card) => setDraggedCard(card);
-  const handleDragOver = (e) => e.preventDefault(); 
+  const handleDragOver = (e) => e.preventDefault();
 
   const handleDropToSolution = () => {
     if (!draggedCard) return;
@@ -124,7 +126,7 @@ const GameScreen = ({ level, levelNumber, personId, eventId, onLevelComplete }) 
       return;
     }
 
-    setLocked(true); // وقف التايمر
+    setLocked(true); 
     setIsSubmitting(true);
 
     const scoreEarned = currentPoints;
@@ -135,7 +137,9 @@ const GameScreen = ({ level, levelNumber, personId, eventId, onLevelComplete }) 
 
       if (data.status === true) {
         setFeedback('Score saved! Loading next level...');
-        setTimeout(() => { onLevelComplete(); }, 1500);
+        setTimeout(() => { onLevelComplete(data.totalScore); }, 1500);
+      } else if (data.message === 'Session expired. Please login again.') {
+        setFeedback('Session expired. Please login again.');
       } else {
         setFeedback('Error saving score.');
         setLocked(false);
@@ -176,14 +180,14 @@ const GameScreen = ({ level, levelNumber, personId, eventId, onLevelComplete }) 
     <section>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', padding: '15px', backgroundColor: 'var(--card-bg)', borderRadius: '12px', boxShadow: 'var(--shadow)' }}>
         <div>
-           <h3 style={{ margin: 0, color: 'var(--primary)' }}>Level {level?.id}</h3>
-           <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>{level?.menuTitle}</span>
+          <h3 style={{ margin: 0, color: 'var(--primary)' }}>Level {level?.id}</h3>
+          <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>{level?.menuTitle}</span>
         </div>
         <div style={{ textAlign: 'right' }}>
-           <div style={{ fontSize: '28px', fontWeight: 'bold', color: timeLeft <= 10 ? 'var(--danger)' : 'var(--text)' }}>
-             ⏱ {timeLeft}s
-           </div>
-           <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Worth now: {currentPoints} pts</span>
+          <div style={{ fontSize: '28px', fontWeight: 'bold', color: timeLeft <= 10 ? 'var(--danger)' : 'var(--text)' }}>
+            ⏱ {timeLeft}s
+          </div>
+          <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Worth now: {currentPoints} pts</span>
         </div>
       </div>
 
