@@ -261,39 +261,8 @@ const levels = [
         ],
         correctOrder: ["correct"],
         output: "> 2.5"
-    },
-    {
-        id: 11, // يمكنك تعديل الرقم حسب ترتيب المستوى
-        type: "complete", // استخدمنا هذا النوع لأنه يعتمد على إجابة واحدة
-        difficulty: 1,
-        menuTitle: "DOM Manipulation",
-        menuDesc: "Complete the code to change the heading's text.",
-        
-        // العناوين مطابقة تماماً للصورة
-        leftTitle: "ANSWER OPTIONS",
-        leftDescription: "Choose the best answer",
-        rightTitle: "YOUR CHOICE",
-        rightDescription: "Your selected answer appears here",
-
-        // الكود المعروض في الشاشة العلوية السوداء
-        codePreview: [
-            { num: 1, code: '<h1 id="title">Old Title</h1>' },
-            { num: 2, code: '' }, // سطر فارغ لتنسيق المسافة
-            { num: 3, code: 'const title = document.querySelector("#title");' },
-            { num: 4, code: 'title.________ = "New Title";', missing: true }
-        ],
-
-     
-        cards: [
-            { id: "correct", text: "textContent" },
-            { id: "wrong_1", text: "href" },
-            { id: "wrong_2", text: "src" },
-            { id: "wrong_3", text: "querySelector" }
-        ],
-        
-        correctOrder: ["correct"],
-        output: "> Heading updated to 'New Title' successfully!"
     }
+    
 ];
 
 export default levels;
