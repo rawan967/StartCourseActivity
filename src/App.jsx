@@ -1,29 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import Login from './components/Login';
 import GameScreen from './components/GameScreen';
-import levels from './data/levels';
+import levelsData from './data/levels';
 import courseImage from './assets/image.png';
 import { API_URL, EVENT_ID } from './config';
 import './App.css';
 
+// levels.js ممكن يبقى array (نفس الأسئلة لكل الكورسات)
+// أو object مفاتيحه أسماء الكورسات زي data1: { 'Web': [...], 'Python': [...] }
+const getLevels = (course) => {
+  if (Array.isArray(levelsData)) return levelsData;
+  const key = Object.keys(levelsData).find(
+    (k) => k.trim().toLowerCase() === (course || '').trim().toLowerCase()
+  );
+  return key ? levelsData[key] : [];
+};
+
 function App() {
   const [personId, setPersonId] = useState(null);
+  const [course, setCourse] = useState(null);
+  const [group, setGroup] = useState(null);
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
-  const [totalScore, setTotalScore] = useState(null);     // السكور الكلي (كل السيشنز)
-  const [sessionScore, setSessionScore] = useState(0);    // اللي كسبه في السيشن دي بس
+  const [totalScore, setTotalScore] = useState(null);   // السكور الكلي (كل السيشنز)
+  const [startScore, setStartScore] = useState(0);      // سكوره وقت الـ login
+  const [sessionScore, setSessionScore] = useState(0);  // اللي كسبه في السيشن دي بس
   const [leaderboard, setLeaderboard] = useState(null);
 
+  const levels = getLevels(course);
 
-  const handleLoginSuccess = (id, currentScore = 0) => {
+  const handleLoginSuccess = (id, currentScore = 0, courseName = null, groupName = null) => {
     setPersonId(id);
+    setCourse(courseName);
+    setGroup(groupName);
     setCurrentLevelIndex(0);
     setIsFinished(false);
     setTotalScore(currentScore);
+    setStartScore(currentScore);
     setSessionScore(0);
     setLeaderboard(null);
   };
 
+  // total = السكور الكلي الراجع من السيرفر (ممكن يبقى undefined لو الحفظ فشل)
   const handleLevelComplete = (total) => {
     if (typeof total === 'number') {
       setSessionScore((s) => s + (total - (totalScore ?? 0)));
@@ -37,9 +55,11 @@ function App() {
     }
   };
 
- 
+  // اللعب تاني = رجوع للـ login (السيرفر بيبدأ سيشن جديدة من هناك)
   const handlePlayAgain = () => {
     setPersonId(null);
+    setCourse(null);
+    setGroup(null);
     setCurrentLevelIndex(0);
     setIsFinished(false);
     setSessionScore(0);
@@ -48,7 +68,10 @@ function App() {
 
   const fetchLeaderboard = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/events/startcourse/${EVENT_ID}/leaderboard`);
+      const response = await fetch(
+        `${API_URL}/api/events/startcourse/${EVENT_ID}/leaderboard` +
+        `?course=${encodeURIComponent(course || '')}&group=${encodeURIComponent(group || '')}`
+      );
       const data = await response.json();
       if (data.status === true) setLeaderboard(data.message);
     } catch (error) {
@@ -58,9 +81,25 @@ function App() {
 
   useEffect(() => {
     if (isFinished && personId) {
+      const fetchFinalScore = async () => {
+        try {
+          const response = await fetch(
+            `${API_URL}/api/events/startcourse/${EVENT_ID}/${personId}?course=${encodeURIComponent(course || '')}`
+          );
+          const data = await response.json();
+          if (data.status === true) {
+            const total = parseInt(data.message.data3) || 0;
+            setTotalScore(total);
+            setSessionScore(Math.max(total - startScore, 0));
+          }
+        } catch (error) {
+          console.error("Error fetching final stats:", error);
+        }
+      };
+      fetchFinalScore();
       fetchLeaderboard();
     }
-  }, [isFinished, personId]);
+  }, [isFinished, personId, course, group]);
 
   if (isFinished) {
     const myIndex = leaderboard ? leaderboard.findIndex((r) => r.person_id === personId) : -1;
@@ -86,6 +125,11 @@ function App() {
             <h2 style={{ color: 'var(--primary)', margin: 0 }}>🏆 Leaderboard</h2>
             <button className="btn btn-secondary" style={{ padding: '8px 14px' }} onClick={fetchLeaderboard}>↻ Refresh</button>
           </div>
+          {course && (
+            <p style={{ color: 'var(--text-muted)', marginTop: 0, fontSize: '14px' }}>
+              {course}{group ? ` · ${group}` : ''}
+            </p>
+          )}
           {leaderboard === null ? (
             <p style={{ color: 'var(--text-muted)' }}>Loading...</p>
           ) : (
@@ -120,10 +164,19 @@ function App() {
 
       {!personId ? (
         <Login onLoginSuccess={handleLoginSuccess} />
+      ) : levels.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '40px', background: 'var(--card-bg)', borderRadius: '16px', boxShadow: 'var(--shadow)' }}>
+          <h2 style={{ color: 'var(--primary)' }}>No questions yet</h2>
+          <p style={{ color: 'var(--text-muted)' }}>
+            There are no questions available for your course{course ? ` (${course})` : ''}.
+          </p>
+          <button className="btn btn-secondary" onClick={handlePlayAgain}>← Back</button>
+        </div>
       ) : (
         <GameScreen
           level={levels[currentLevelIndex]}
           personId={personId}
+          course={course}
           levelNumber={currentLevelIndex + 1}
           eventId={EVENT_ID}
           onLevelComplete={handleLevelComplete}

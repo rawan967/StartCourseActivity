@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL, TIME_LIMIT, BASE_POINTS, MAX_BONUS } from '../config';
 
-
-const GameScreen = ({ level, levelNumber, personId, eventId, onLevelComplete }) => {
+// onLevelComplete(totalScore) بتتنده بعد كل مرحلة، و totalScore هو السكور الكلي من السيرفر
+const GameScreen = ({ level, levelNumber, personId, eventId, course, onLevelComplete }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState('');
 
@@ -11,6 +11,7 @@ const GameScreen = ({ level, levelNumber, personId, eventId, onLevelComplete }) 
   const [multiBlanks, setMultiBlanks] = useState({});
   const [draggedCard, setDraggedCard] = useState(null);
 
+  // التايمر: كل سؤال ليه وقت، وكل ما اللاعب يجاوب أسرع بياخد بونص أكبر
   const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
   const [locked, setLocked] = useState(false);
 
@@ -23,10 +24,10 @@ const GameScreen = ({ level, levelNumber, personId, eventId, onLevelComplete }) 
     setLocked(false);
   }, [level]);
 
-
+  // بيبعت النقاط + رقم المرحلة (جوه السيشن) للـ backend
   const saveProgress = async (points) => {
     const response = await fetch(
-      `${API_URL}/api/events/startcourse/${eventId}/updatescore/${points}/${personId}?level=${levelNumber}`,
+      `${API_URL}/api/events/startcourse/${eventId}/updatescore/${points}/${personId}?level=${levelNumber}&course=${encodeURIComponent(course || '')}`,
       { method: 'PATCH' }
     );
     return response.json();
@@ -126,7 +127,7 @@ const GameScreen = ({ level, levelNumber, personId, eventId, onLevelComplete }) 
       return;
     }
 
-    setLocked(true); 
+    setLocked(true); // وقف التايمر
     setIsSubmitting(true);
 
     const scoreEarned = currentPoints;

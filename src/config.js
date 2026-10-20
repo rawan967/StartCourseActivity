@@ -1,5 +1,7 @@
 // عنوان الـ backend. غيّريه من ملف .env (VITE_API_URL) من غير ما تلمسي الكود.
+// export const API_URL = 'http://localhost:5550';
 export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5550';
+
 export const EVENT_ID = '7-14';
 
 // إعدادات التايمر والنقاط (عدّليهم براحتك)
