@@ -1,418 +1,261 @@
+// Session 4 – Practical Coding MCQ Quiz
+// كل المستويات إجابة واحدة (الكروت بتتخلط عشوائي، فمكان الإجابة الصح بيتغير كل مرة)
+
 const levels = [
-    /* =========================================
-       LEVEL 1 - PREDICT THE OUTPUT (compound assignment)
-       x: 10 -> 16 -> 4 -> 1
-    ========================================= */
+    /* Q1 - Media query (answer: B) */
     {
         id: 1,
-        type: "Display",
-        difficulty: 2,
-        menuTitle: "ما الناتج؟",
-        menuDesc: "Work out the final value of x.",
+        type: "complete",
+        difficulty: 1,
+        menuTitle: "Complete the Media Query",
+        menuDesc: "Pick the condition that matches the comment.",
         leftTitle: "ANSWER OPTIONS",
-        leftDescription: "Choose the output",
+        leftDescription: "Choose the best answer",
         rightTitle: "YOUR CHOICE",
-        rightDescription: "Drop the correct answer here",
+        rightDescription: "Your selected answer appears here",
         codePreview: [
-            { num: 1, code: "int x = 10;" },
-            { num: 2, code: "x += 3 * 2;" },
-            { num: 3, code: "x /= 4;" },
-            { num: 4, code: "x %= 3;" },
-            { num: 5, code: "cout << x;" }
+            { num: 1, code: "/* apply only on screens 600px wide or smaller */" },
+            { num: 2, code: "@media ________ {", missing: true },
+            { num: 3, code: "body { background-color: lightblue; }" },
+            { num: 4, code: "}" }
         ],
         cards: [
-            { id: "wrong_1", text: "0" },
-            { id: "wrong_2", text: "4" },
-            { id: "correct", text: "1" },
-            { id: "wrong_3", text: "2" }
+            { id: "wrong_1", text: "(min-width: 600px)" },
+            { id: "correct", text: "(max-width: 600px)" },
+            { id: "wrong_2", text: "(width: 600px)" },
+            { id: "wrong_3", text: "(screen: 600px)" }
         ],
         correctOrder: ["correct"],
-        output: "> 1"
+        output: "> Media query completed!"
     },
 
-    /* =========================================
-       LEVEL 2 - PREDICT THE OUTPUT (operator precedence)
-       5 + 2*3 - 4/2 = 5 + 6 - 2 = 9
-    ========================================= */
+    /* Q2 - Responsive layout (answer: A) */
     {
         id: 2,
-        type: "Display",
+        type: "debug",
         difficulty: 2,
-        menuTitle: "ما الناتج؟",
+        menuTitle: "Fix the Responsive Layout",
+        menuDesc: "100% width on small screens, 50% on larger screens.",
+        leftTitle: "ANSWER OPTIONS",
+        leftDescription: "Choose the correct code",
+        rightTitle: "YOUR CHOICE",
+        rightDescription: "Your selected answer appears here",
+        codePreview: [
+            { num: 1, code: "/* The element must take 100% width on small screens and 50% width on larger screens. Which code is correct? */" }
+        ],
+        cards: [
+            { id: "correct", text: ".box { width: 50%; } @media (max-width: 600px) { .box { width: 100%; } }" },
+            { id: "wrong_1", text: ".box { width: 100%; } @media (max-width: 600px) { .box { width: 50%; } }" },
+            { id: "wrong_2", text: ".box { width: 50px; }" },
+            { id: "wrong_3", text: ".box { width: auto; media: responsive; }" }
+        ],
+        correctOrder: ["correct"],
+        output: "> Layout fixed!"
+    },
+
+    /* Q3 - Grid (answer: B) */
+    {
+        id: 3,
+        type: "complete",
+        difficulty: 1,
+        menuTitle: "Find the Missing CSS Property",
+        menuDesc: "Create a 3-column grid.",
+        leftTitle: "ANSWER OPTIONS",
+        leftDescription: "Choose the best answer",
+        rightTitle: "YOUR CHOICE",
+        rightDescription: "Your selected answer appears here",
+        codePreview: [
+            { num: 1, code: ".container {" },
+            { num: 2, code: "display: grid;" },
+            { num: 3, code: "________: repeat(3, 1fr);", missing: true },
+            { num: 4, code: "}" }
+        ],
+        cards: [
+            { id: "wrong_1", text: "grid-gap" },
+            { id: "correct", text: "grid-template-columns" },
+            { id: "wrong_2", text: "flex-direction" },
+            { id: "wrong_3", text: "justify-content" }
+        ],
+        correctOrder: ["correct"],
+        output: "> Grid completed!"
+    },
+
+    /* Q4 - Flexbox (answer: B) */
+    {
+        id: 4,
+        type: "complete",
+        difficulty: 1,
+        menuTitle: "Complete the Flexbox Code",
+        menuDesc: "Center the items along the main axis.",
+        leftTitle: "ANSWER OPTIONS",
+        leftDescription: "Choose the best answer",
+        rightTitle: "YOUR CHOICE",
+        rightDescription: "Your selected answer appears here",
+        codePreview: [
+            { num: 1, code: "/* center the items horizontally (main axis) */" },
+            { num: 2, code: ".container {" },
+            { num: 3, code: "display: flex;" },
+            { num: 4, code: "________: center;", missing: true },
+            { num: 5, code: "}" }
+        ],
+        cards: [
+            { id: "wrong_1", text: "align-items" },
+            { id: "correct", text: "justify-content" },
+            { id: "wrong_2", text: "flex-direction" },
+            { id: "wrong_3", text: "position" }
+        ],
+        correctOrder: ["correct"],
+        output: "> Flexbox completed!"
+    },
+
+    /* Q5 - Transition (answer: A) */
+    {
+        id: 5,
+        type: "debug",
+        difficulty: 1,
+        menuTitle: "Fix the Transition",
+        menuDesc: "Smooth background change on hover.",
+        leftTitle: "ANSWER OPTIONS",
+        leftDescription: "Choose the correct code",
+        rightTitle: "YOUR CHOICE",
+        rightDescription: "Your selected answer appears here",
+        codePreview: [
+            { num: 1, code: "/* Which code makes a button's background color change smoothly over 0.3 seconds when hovered? */" }
+        ],
+        cards: [
+            { id: "correct", text: "button { transition: background-color 0.3s; }" },
+            { id: "wrong_1", text: "button { animation: background-color; }" },
+            { id: "wrong_2", text: "button { hover: 0.3s; }" },
+            { id: "wrong_3", text: "button { background-color: transition; }" }
+        ],
+        correctOrder: ["correct"],
+        output: "> Transition fixed!"
+    },
+
+    /* Q6 - console.log (answer: B) */
+    {
+        id: 6,
+        type: "complete",
+        difficulty: 1,
+        menuTitle: "Complete the JavaScript Code",
+        menuDesc: "Print a message to the console.",
+        leftTitle: "ANSWER OPTIONS",
+        leftDescription: "Choose the best answer",
+        rightTitle: "YOUR CHOICE",
+        rightDescription: "Your selected answer appears here",
+        codePreview: [
+            { num: 1, code: "/* print the message to the browser console */" },
+            { num: 2, code: '________("Welcome to JavaScript");', missing: true }
+        ],
+        cards: [
+            { id: "wrong_1", text: "print" },
+            { id: "correct", text: "console.log" },
+            { id: "wrong_2", text: "document.write" },
+            { id: "wrong_3", text: "display" }
+        ],
+        correctOrder: ["correct"],
+        output: "> Welcome to JavaScript"
+    },
+
+    /* Q7 - let (answer: B) */
+    {
+        id: 7,
+        type: "debug",
+        difficulty: 1,
+        menuTitle: "Fix the JavaScript Code",
+        menuDesc: "Declare a variable whose value can change.",
+        leftTitle: "ANSWER OPTIONS",
+        leftDescription: "Choose the correct code",
+        rightTitle: "YOUR CHOICE",
+        rightDescription: "Your selected answer appears here",
+        codePreview: [
+            { num: 1, code: "/* Which code correctly declares a variable whose value can change? */" }
+        ],
+        cards: [
+            { id: "wrong_1", text: "const age = 20; age = 21;" },
+            { id: "correct", text: "let age = 20; age = 21;" },
+            { id: "wrong_2", text: "variable age = 20;" },
+            { id: "wrong_3", text: "change age = 21;" }
+        ],
+        correctOrder: ["correct"],
+        output: "> Variable declared!"
+    },
+
+    /* Q8 - Output (answer: B => 10 + 5*2 = 20) */
+    {
+        id: 8,
+        type: "Display",
+        difficulty: 1,
+        menuTitle: "Predict the Output",
         menuDesc: "Mind the operator precedence.",
         leftTitle: "ANSWER OPTIONS",
         leftDescription: "Choose the output",
         rightTitle: "YOUR CHOICE",
         rightDescription: "Drop the correct answer here",
         codePreview: [
-            { num: 1, code: "int a = 5;" },
-            { num: 2, code: "int b = 2;" },
-            { num: 3, code: "cout << (a + b * 3 - 4 / 2);" }
+            { num: 1, code: "let x = 10;" },
+            { num: 2, code: "let y = 5;" },
+            { num: 3, code: "console.log(x + y * 2);" }
         ],
         cards: [
-            { id: "wrong_1", text: "17" },
-            { id: "wrong_2", text: "8" },
-            { id: "wrong_3", text: "11" },
-            { id: "correct", text: "9" }
+            { id: "wrong_1", text: "30" },
+            { id: "correct", text: "20" },
+            { id: "wrong_2", text: "25" },
+            { id: "wrong_3", text: "15" }
         ],
         correctOrder: ["correct"],
-        output: "> 9"
+        output: "> 20"
     },
 
-    /* =========================================
-       LEVEL 3 - WHICH EXPRESSION EQUALS 1  (single answer)
-       a = 6, b = 2
-       a > b && b < 3  -> true (1)   <-- correct
-       a % b           -> 0
-       a == 6 && b == 0 -> false (0)
-       a < b && b > 0  -> false (0)
-    ========================================= */
+    /* Q9 - script tag (answer: B) */
     {
-        id: 3,
-        type: "Display",
-        difficulty: 2,
-        menuTitle: "أي التعبيرات التالية قيمته النهائية 1 في C++؟",
-        menuDesc: "Pick the one expression that evaluates to 1.",
+        id: 9,
+        type: "complete",
+        difficulty: 1,
+        menuTitle: "Complete the HTML Code",
+        menuDesc: "Connect an external JavaScript file.",
         leftTitle: "ANSWER OPTIONS",
         leftDescription: "Choose the best answer",
         rightTitle: "YOUR CHOICE",
         rightDescription: "Your selected answer appears here",
         codePreview: [
-            { num: 1, code: "int a = 6, b = 2;" }
+            { num: 1, code: "<!-- Connect an external JavaScript file named script.js -->" },
+            { num: 2, code: "________", missing: true }
         ],
         cards: [
-            { id: "wrong_1", text: "a == 6 && b == 0" },
-            { id: "correct", text: "a > b && b < 3" },
-            { id: "wrong_2", text: "a % b" },
-            { id: "wrong_3", text: "a < b && b > 0" }
+            { id: "wrong_1", text: '<link src="script.js">' },
+            { id: "correct", text: '<script src="script.js"></script>' },
+            { id: "wrong_2", text: '<style src="script.js"></style>' },
+            { id: "wrong_3", text: '<javascript href="script.js"></javascript>' }
         ],
         correctOrder: ["correct"],
-        output: "> 1"
+        output: "> Script connected!"
+    },
+
+    /* Q10 - Find the bug (answer: B) */
+    {
+        id: 10,
+        type: "debug",
+        difficulty: 2,
+        menuTitle: "Find the Bug",
+        menuDesc: "What is the problem?",
+        leftTitle: "ANSWER OPTIONS",
+        leftDescription: "Choose the right explanation",
+        rightTitle: "YOUR CHOICE",
+        rightDescription: "Your selected answer appears here",
+        codePreview: [
+            { num: 1, code: '<h1 id="title">Old Text</h1>' },
+            { num: 2, code: 'document.querySelector(".title").textContent = "Hello Students";', error: true }
+        ],
+        cards: [
+            { id: "wrong_1", text: "textContent cannot change text." },
+            { id: "correct", text: 'The selector should be "#title" instead of ".title".' },
+            { id: "wrong_2", text: "querySelector only selects classes." },
+            { id: "wrong_3", text: "JavaScript cannot change HTML content." }
+        ],
+        correctOrder: ["correct"],
+        output: "> Bug found!"
     }
 ];
 
 export default levels;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const levels = [
-//     {
-//         id: 1,
-//         type: "arrange",
-//         difficulty: 1,
-//         menuTitle: "Arrange the Code",
-//         menuDesc: "Put the lines in the right order.",
-//         leftTitle: "YOUR CARDS",
-//         leftDescription: "Drag them into the correct order",
-//         rightTitle: "BUILD YOUR SOLUTION",
-//         rightDescription: "Arrange the code here",
-//         cards: [
-//             { id: "declare_a,b", text: "int a = 10 , b = 9;" },
-//             { id: "sum",         text: "int sum = a + b;" },
-//             { id: "print",       text: "cout << sum;" }
-//         ],
-//         correctOrder: ["declare_a,b", "sum", "print"],
-//         output: "> 19"
-//     },
-
-//     /* =========================================
-//        LEVEL 2 - LOGICAL ERROR
-//     ========================================= */
-//     {
-//         id: 2,
-//         type: "logical_Error",
-//         difficulty: 1,
-//         menuTitle: "Find the Bug",
-//         menuDesc: "Spot the line with the logical error.",
-//         leftTitle: "CODE",
-//         leftDescription: "Drag the line that contains the bug",
-//         rightTitle: "CHOOSE THE BUG",
-//         rightDescription: "Drop the incorrect line here",
-//         cards: [
-//             { id: "declare_age", text: "int age = 25;" },
-//             { id: "condition",   text: "if (age = 19) {" },
-//             { id: "age_19",      text: 'cout << "Age is 19" << endl; }' },
-//             { id: "else",        text: 'else { cout << "Age is not 19" << endl; }' }
-//         ],
-//         correctOrder: ["condition"],
-//         output: "Bug found on line 2!"
-//     },
-
-//     /* =========================================
-//        LEVEL 3 - COMPLETE
-//     ========================================= */
-//     {
-//         id: 3,
-//         type: "complete",
-//         difficulty: 1,
-//         menuTitle: "Complete the Loop",
-//         menuDesc: "Drag the missing loop condition.",
-//         leftTitle: "CODE PIECES",
-//         leftDescription: "Drag the missing piece",
-//         rightTitle: "COMPLETE THE CODE",
-//         rightDescription: "Drop the missing code here",
-//         codePreview: [
-//             { num: 1, code: "for (int i = 1; ________; i++)", missing: true },
-//             { num: 2, code: "{" },
-//             { num: 3, code: ' cout << i << " ";' },
-//             { num: 4, code: "}" }
-//         ],
-//         cards: [
-//             { id: "wrong_1", text: "i = 5;" },
-//             { id: "correct", text: "i <= 5;" },
-//             { id: "wrong_2", text: "i >= 5;" }
-//         ],
-//         correctOrder: ["correct"],
-//         output: "> 1 2 3 4 5 "
-//     },
-
-//     /* =========================================
-//        LEVEL 4 - DEBUG
-//     ========================================= */
-//     {
-//         id: 4,
-//         type: "debug",
-//         difficulty: 2,
-//         menuTitle: "Fix the Array Bug",
-//         menuDesc: "Pick the correct fix for the crash.",
-//         leftTitle: "FIX OPTIONS",
-//         leftDescription: "Drag the correct fix",
-//         rightTitle: "FIX THE BUG",
-//         rightDescription: "Drop the correct code here",
-//         codePreview: [
-//             { num: 1, code: "int numbers[] = {10, 20, 30};" },
-//             { num: 2, code: "cout << numbers[3]", error: true }
-//         ],
-//         cards: [
-//             { id: "wrong_1", text: "cout << numbers[1]" },
-//             { id: "correct", text: "cout << numbers[1];" },
-//             { id: "wrong_2", text: "cout << numbers[3];" }
-//         ],
-//         correctOrder: ["correct"],
-//         output: "> Code fixed successfully!"
-//     },
-
-//     /* =========================================
-//        LEVEL 5 - FUNCTION
-//     ========================================= */
-//     {
-//         id: 5,
-//         type: "function",
-//         difficulty: 2,
-//         menuTitle: "Complete the Function",
-//         menuDesc: "Fill in the missing return line.",
-//         leftTitle: "CODE PIECES",
-//         leftDescription: "Drag the missing line",
-//         rightTitle: "COMPLETE THE FUNCTION",
-//         rightDescription: "Drop the correct code here",
-//         codePreview: [
-//             { num: 1, code: "int multiply(int a, int b) {" },
-//             { num: 2, code: "___________", missing: true },
-//             { num: 3, code: "}" },
-//             { num: 4, code: "cout << multiply(4, 5);" }
-//         ],
-//         cards: [
-//             { id: "wrong_1", text: "return a + b;" },
-//             { id: "correct", text: "return a * b;" },
-//             { id: "wrong_2", text: "cout << a * b;" }
-//         ],
-//         correctOrder: ["correct"],
-//         output: "> 20"
-//     },
-
-//     /* =========================================
-//        LEVEL 6 - PREDICT THE OUTPUT
-//     ========================================= */
-//     {
-//         id: 6,
-//         type: "Display",
-//         difficulty: 2,
-//         menuTitle: "Predict the Output",
-//         menuDesc: "Work out what the modulo prints.",
-//         leftTitle: "CODE PIECES",
-//         leftDescription: "Choose the output",
-//         rightTitle: "PICK THE OUTPUT",
-//         rightDescription: "Drop the correct answer here",
-//         codePreview: [
-//             { num: 1, code: "int x = 10 ;" },
-//             { num: 2, code: "int y = 19;" },
-//             { num: 3, code: "cout << x % y;" }
-//         ],
-//         cards: [
-//             { id: "wrong_1", text: "> 2" },
-//             { id: "correct", text: "> 10" },
-//             { id: "wrong_2", text: "> 53" },
-//             { id: "wrong_3", text: "> 15" }
-//         ],
-//         correctOrder: ["correct"],
-//         output: "> 10"
-//     },
-
-//     /* =========================================
-//        LEVEL 7 - COMPLETE (two blanks)
-//     ========================================= */
-//     {
-//         id: 7,
-//         type: "complete_multi",
-//         difficulty: 2,
-//         menuTitle: "Complete the Swap",
-//         menuDesc: "Two lines are missing — fill in both to swap the values.",
-//         leftTitle: "CODE PIECES",
-//         leftDescription: "Drag each piece to its matching blank",
-//         rightTitle: "COMPLETE THE FUNCTION",
-//         rightDescription: "Drop one piece into each blank",
-//         codePreview: [
-//             { num: 1, code: "void swap(int &a, int &b) {" },
-//             { num: 2, code: "int temp = a;" },
-//             { num: 3, blank: "blank1" },
-//             { num: 4, blank: "blank2" },
-//             { num: 5, code: "}" }
-//         ],
-//         blanks: {
-//             blank1: "a_eq_b",
-//             blank2: "b_eq_temp"
-//         },
-//         cards: [
-//             { id: "a_eq_b",      text: "a = b;" },
-//             { id: "b_eq_temp",   text: "b = temp;" },
-//             { id: "temp_eq_b",   text: "temp = b;" },
-//             { id: "a_eq_temp",   text: "a = temp;" }
-//         ],
-//         output: "> a = 20, b = 10 (swapped)"
-//     },
-
-//     /* =========================================
-//        LEVEL 8 - LOGICAL ERROR (harder, more lines)
-//     ========================================= */
-//     {
-//         id: 8,
-//         type: "logical_Error",
-//         difficulty: 3,
-//         menuTitle: "Find the Subtle Bug",
-//         menuDesc: "A wrong operator breaks the condition.",
-//         leftTitle: "CODE",
-//         leftDescription: "Drag the line that contains the bug",
-//         rightTitle: "CHOOSE THE BUG",
-//         rightDescription: "Drop the incorrect line here",
-//         cards: [
-//             { id: "decl_score",  text: "int score = 45;" },
-//             { id: "decl_pass",   text: "bool passed = true;" },
-//             { id: "condition",   text: "if (score >= 50 || passed) {" },
-//             { id: "print_pass",  text: 'cout << "Result: PASS";' },
-//             { id: "else",        text: 'else { cout << "Result: FAIL"; }' }
-//         ],
-//         correctOrder: ["condition"],
-//         output: "Bug found: should be && not ||"
-//     },
-
-//     /* =========================================
-//        LEVEL 9 - COMPLETE (recursion base case)
-//     ========================================= */
-//     {
-//         id: 9,
-//         type: "complete",
-//         difficulty: 3,
-//         menuTitle: "Complete the Recursion",
-//         menuDesc: "Pick the correct base case.",
-//         leftTitle: "CODE PIECES",
-//         leftDescription: "Drag the missing base case",
-//         rightTitle: "COMPLETE THE FUNCTION",
-//         rightDescription: "Drop the missing code here",
-//         codePreview: [
-//             { num: 1, code: "int factorial(int n) {" },
-//             { num: 2, code: "________", missing: true },
-//             { num: 3, code: "return n * factorial(n - 1);" },
-//             { num: 4, code: "}" },
-//             { num: 5, code: "cout << factorial(4);" }
-//         ],
-//         cards: [
-//             { id: "wrong_1", text: "if (n == 0) return 0;" },
-//             { id: "correct", text: "if (n == 0) return 1;" },
-//             { id: "wrong_2", text: "if (n == 1) return 0;" }
-//         ],
-//         correctOrder: ["correct"],
-//         output: "> 24"
-//     },
-
-//     /* =========================================
-//        LEVEL 10 - DEBUG (integer division)
-//     ========================================= */
-//     {
-//         id: 10,
-//         type: "debug",
-//         difficulty: 3,
-//         menuTitle: "Fix the Division Bug",
-//         menuDesc: "The result is being truncated to an int.",
-//         leftTitle: "FIX OPTIONS",
-//         leftDescription: "Drag the correct fix",
-//         rightTitle: "FIX THE BUG",
-//         rightDescription: "Drop the correct code here",
-//         codePreview: [
-//             { num: 1, code: "int a = 5, b = 2;" },
-//             { num: 2, code: "cout << a / b;", error: true }
-//         ],
-//         cards: [
-//             { id: "wrong_1", text: "cout << a / b;" },
-//             { id: "correct", text: "cout << (float)a / b;" },
-//             { id: "wrong_2", text: "cout << a / (int)b;" }
-//         ],
-//         correctOrder: ["correct"],
-//         output: "> 2.5"
-//     },
-//     {
-//         id: 11, // يمكنك تعديل الرقم حسب ترتيب المستوى
-//         type: "complete", // استخدمنا هذا النوع لأنه يعتمد على إجابة واحدة
-//         difficulty: 1,
-//         menuTitle: "DOM Manipulation",
-//         menuDesc: "Complete the code to change the heading's text.",
-        
-//         // العناوين مطابقة تماماً للصورة
-//         leftTitle: "ANSWER OPTIONS",
-//         leftDescription: "Choose the best answer",
-//         rightTitle: "YOUR CHOICE",
-//         rightDescription: "Your selected answer appears here",
-
-//         // الكود المعروض في الشاشة العلوية السوداء
-//         codePreview: [
-//             { num: 1, code: '<h1 id="title">Old Title</h1>' },
-//             { num: 2, code: '' }, // سطر فارغ لتنسيق المسافة
-//             { num: 3, code: 'const title = document.querySelector("#title");' },
-//             { num: 4, code: 'title.________ = "New Title";', missing: true }
-//         ],
-
-     
-//         cards: [
-//             { id: "correct", text: "textContent" },
-//             { id: "wrong_1", text: "href" },
-//             { id: "wrong_2", text: "src" },
-//             { id: "wrong_3", text: "querySelector" }
-//         ],
-        
-//         correctOrder: ["correct"],
-//         output: "> Heading updated to 'New Title' successfully!"
-//     }
-// ];
-
-// export default levels;
