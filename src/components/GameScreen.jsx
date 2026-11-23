@@ -108,6 +108,45 @@ const GameScreen = ({ level, levelNumber, personId, eventId, course, onLevelComp
     setDraggedCard(null);
   };
 
+  // ===== الضغط على الاختيار ينقله للبوكس، والضغط عليه تاني يرجّعه =====
+  const moveToSolution = (card) => {
+    if (locked || isSubmitting) return;
+
+    if (level.type === 'arrange') {
+      // ترتيب: الكارت بيتضاف في آخر الحل
+      setSolutionCards([...solutionCards, card]);
+      setAvailableCards(availableCards.filter(c => c.id !== card.id));
+    } else if (level.type === 'complete_multi') {
+      // أكتر من فراغ: الكارت بيروح لأول فراغ فاضي
+      const blankKeys = (level.codePreview || []).filter(l => l.blank).map(l => l.blank);
+      const target = blankKeys.find(k => !multiBlanks[k]);
+      if (!target) return;
+      setMultiBlanks({ ...multiBlanks, [target]: card });
+      setAvailableCards(availableCards.filter(c => c.id !== card.id));
+    } else {
+      // إجابة واحدة: الكارت الجديد بيحل مكان القديم
+      const previousCard = solutionCards[0];
+      setSolutionCards([card]);
+      const newAvailable = availableCards.filter(c => c.id !== card.id);
+      if (previousCard) newAvailable.push(previousCard);
+      setAvailableCards(newAvailable);
+    }
+  };
+
+  const returnToAvailable = (card) => {
+    if (locked || isSubmitting) return;
+    setSolutionCards(solutionCards.filter(c => c.id !== card.id));
+    setAvailableCards([...availableCards, card]);
+  };
+
+  const returnBlank = (blankId) => {
+    if (locked || isSubmitting) return;
+    const card = multiBlanks[blankId];
+    if (!card) return;
+    setMultiBlanks({ ...multiBlanks, [blankId]: null });
+    setAvailableCards([...availableCards, card]);
+  };
+
   const handleCorrectAnswer = async () => {
     let isCorrect = false;
 
@@ -164,9 +203,10 @@ const GameScreen = ({ level, levelNumber, personId, eventId, course, onLevelComp
               <div
                 onDragOver={handleDragOver}
                 onDrop={() => handleDropToBlank(line.blank)}
+                onClick={() => returnBlank(line.blank)}
                 style={{ border: '1px dashed var(--primary)', minWidth: '100px', padding: '2px 10px', minHeight: '24px', backgroundColor: 'rgba(255,255,255,0.1)', cursor: 'pointer' }}
               >
-                {multiBlanks[line.blank] ? multiBlanks[line.blank].text : <span style={{ color: 'var(--text-muted)' }}>Drop here</span>}
+                {multiBlanks[line.blank] ? multiBlanks[line.blank].text : <span style={{ color: 'var(--text-muted)' }}>Click an answer</span>}
               </div>
             ) : (
               <span>{line.code}</span>
@@ -199,7 +239,7 @@ const GameScreen = ({ level, levelNumber, personId, eventId, course, onLevelComp
             <h4 style={{ color: 'var(--primary)', marginBottom: '10px', fontSize: '14px' }}>{level?.leftTitle || "AVAILABLE CARDS"}</h4>
             <div onDragOver={handleDragOver} onDrop={handleDropToAvailable} style={{ minHeight: '150px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {availableCards.map(card => (
-                <div key={card.id} draggable onDragStart={() => handleDragStart(card)} style={{ padding: '12px', backgroundColor: 'var(--card-bg)', border: '1px solid var(--border)', borderRadius: '8px', cursor: 'grab', fontFamily: 'monospace', fontSize: '14px' }}>
+                <div key={card.id} draggable onDragStart={() => handleDragStart(card)} onClick={() => moveToSolution(card)} style={{ padding: '12px', backgroundColor: 'var(--card-bg)', border: '1px solid var(--border)', borderRadius: '8px', cursor: 'pointer', fontFamily: 'monospace', fontSize: '14px' }}>
                   {card.text}
                 </div>
               ))}
@@ -210,10 +250,10 @@ const GameScreen = ({ level, levelNumber, personId, eventId, course, onLevelComp
               <h4 style={{ color: 'var(--primary)', marginBottom: '10px', fontSize: '14px' }}>{level?.rightTitle || "SOLUTION"}</h4>
               <div onDragOver={handleDragOver} onDrop={handleDropToSolution} style={{ minHeight: '150px', padding: '15px', border: '2px dashed var(--primary)', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px', backgroundColor: 'rgba(255,255,255,0.5)' }}>
                 {solutionCards.length === 0 ? (
-                  <p style={{ margin: 'auto', color: 'var(--text-muted)' }}>Drop here</p>
+                  <p style={{ margin: 'auto', color: 'var(--text-muted)' }}>Click an answer to place it here</p>
                 ) : (
                   solutionCards.map(card => (
-                    <div key={card.id} draggable onDragStart={() => handleDragStart(card)} style={{ padding: '12px', backgroundColor: 'var(--card-bg)', border: '1px solid var(--primary)', borderRadius: '8px', cursor: 'grab', fontFamily: 'monospace', fontSize: '14px' }}>
+                    <div key={card.id} draggable onDragStart={() => handleDragStart(card)} onClick={() => returnToAvailable(card)} style={{ padding: '12px', backgroundColor: 'var(--card-bg)', border: '1px solid var(--primary)', borderRadius: '8px', cursor: 'pointer', fontFamily: 'monospace', fontSize: '14px' }}>
                       {card.text}
                     </div>
                   ))
